@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Cadastro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    
+    <div class="container" id="app">
+        <div class="logo">
+            <img src = "./logo1.png" />
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-12 border-bottom mb-5">
+                <h2>{{name}}</h2>
+            </div>
+
+            <div class="col-4">
+
+                <form action="">
+
+                    <div class="form-group mr-1">
+                        <label>Nome ou Razão Social</label>
+                        <input type="text" class="form-control" placeholder="Nome Completo..." v-model="contact.name">
+                    </div>
+
+
+                    <div class="form-group mr-1">
+                        <label>CPF ou CNPJ</label>
+                        <input type="text" class="form-control" placeholder="Seu CPF ou CNPJ..." v-model="contact.cpf">
+                    </div>
+
+                    <div class="form-group mr-1">
+                        <label>Data de Vinculação</label>
+                        <input type="date" class="form-control" placeholder="Data de Vinculaçao" v-model="contact.vinculacao">
+                    </div>
+
+                    <div class="form-group mr-1">
+                        <label>Projeto</label>
+                        <input type="text" class="form-control" placeholder="Digite o Projeto Vinculado... " v-model="contact.projeto">
+                    </div>
+
+                    <div class="form-group mr-1">
+                        <label>Estado do projeto </label>
+                        <input type="text" class="form-control" placeholder="Digite o Estado Projeto... " v-model="contact.estado">
+                    </div>
+
+                    <div class="form-group ml-1">
+                        <button class="btn btn-lg btn-rounded btn-sm " @click.prevent = "showContact(contact)">CADASTRAR</button>
+                    </div>
+
+                    
+                </form>
+            </div>
+
+            <div class="col-8 border-left">
+                
+                <div class="contact">
+                        
+                    <div class="col-12 mb-2" v-for="contact in contacts">
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{contact.name}}</h5>
+
+                                <p class="card-text">CPF: {{contact.cpf}} - Data: {{contact.vinculacao}} - Projeto Vinculado: {{contact.projeto}} - Estado do Projeto: {{contact.estado}}</p>
+
+                                <a href="#" class="btn btn-sm btn-sm" @click.prevent="edit(contact)">ALTERAR</a>
+                                <a href="#" class="btn btn-sm btn-sm" @click.prevent="remove(contact.id)">REMOVER</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                contacts: [],
+                name: '',
+                contact: {
+                    id: '',
+                    name: '',
+                    cpf: '',
+                    vinculacao: '',
+                    projeto: '',
+                    estado: ''
+                }
+            },
+            created(){
+                this.contacts = JSON.parse(localStorage.getItem('Cadastro'));
+
+            },
+            methods: {
+                showContact(contact){
+                    let contacts = localStorage.getItem('Cadastro');
+
+                    contact.id = new Date().getTime();
+                    
+                    if(contacts) {
+                        
+                        contacts = JSON.parse(contacts);
+                        contacts.push(contact);
+
+                    } else {
+                        contacts = [contact];
+                   }
+
+                    this.contacts = contacts;
+
+                    // o atualizar local storage independemente de novo contato ou nova adição   
+                    localStorage.setItem('Cadastro', JSON.stringify(contacts));
+
+                        location.reload();
+                },
+                remove(contactId) {
+                    let contacts = localStorage.getItem('Cadastro');
+
+                    if(!contacts) return;
+
+                    contacts = JSON.parse(contacts);
+
+                    contacts = contacts.filter((contact) => {
+                        return contact.id != contactId;
+                    });
+
+                    this.contacts = contacts;
+
+                    localStorage.setItem('Cadastro', JSON.stringify(contacts));
+                },
+                edit(contact) {
+                    this.contact = contact;
+                    this.isEdit = true;
+                },
+                updateContact(contact) {
+                    let contacts = this.contacts.map(contactMap => {
+                        if(contactMap.id == contact.id) {
+                            return contact;
+                        }
+
+                        return contactMap;
+                    });
+
+                    this.contacts = contacts;
+                    this.isEdit = false;
+
+                    localStorage.setItem('Cadastro', JSON.stringify(contacts));
+
+                    location.reload();
+   
+                }
+            }
+
+           
+        });
+    </script>   
+     
+</body>
+</html>
